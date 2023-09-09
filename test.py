@@ -27,7 +27,7 @@ icon = pygame.image.load('.\\assets\\icon.jpg')
 pygame.display.set_icon(icon)
 
 
-smallfont = pygame.font.Font('.\\assets\\AtariClassic-gry3.ttf',21)
+smallfont = pygame.font.Font('.\\assets\\AtariClassic-gry3.ttf',23)
 sfont = pygame.font.Font('.\\assets\\AtariClassic-gry3.ttf',12)
 bigfont = pygame.font.Font('.\\assets\\AtariClassic-gry3.ttf',40)
 t_rock = smallfont.render('Rock' , True , (255,255,255))
@@ -76,7 +76,7 @@ class Button:
         self.is_hovered = self.x <= x1 <= self.x + self.width and self.y <= y1 <= self.y + self.height
            
     
-btns = [Button("Rock", 50,520, (0,0,255),180,(0,0,230)), Button("Scissors",260,520, (255,0,0),180,(230,0,0)), Button("Paper", 470,520, (0,255,0),180,(0,230,0))]
+btns = [Button("Rock", 50,520, (0,0,255),180,(0,0,230)), Button("Paper", 260,520, (0,255,0),180,(0,230,0)),Button("Scissor",470,520, (255,0,0),180,(230,0,0))]
 
 startmenubtns =[Button("Start", 205,440, (100,100,100),200,(0,230,0)), Button("Quit",205,510, (100,100,100),200,(230,0,0))]
 mainmenubtns =[Button("Join/Create Room", 95,470, (100,100,100),420,(0,230,0)), Button("Back",205,530, (100,100,100),200,(230,0,0))]
