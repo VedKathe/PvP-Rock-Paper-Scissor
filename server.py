@@ -17,6 +17,7 @@ s.listen(10)
 print("Waiting for a connection, Server Started")
 
 connected = set()
+rooms={}
 games = {}
 idCount = 0
 
@@ -60,16 +61,30 @@ def threaded_client(conn, p, gameId):
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
-
+    #userRoom = conn.recv(1024).decode()
+    
     idCount += 1
     p = 0
     gameId = (idCount - 1)//2
-    if idCount % 2 == 1:
-        games[gameId] = Game(gameId)
-        print("Creating a new game...")
-    else:
-        games[gameId].ready = True
-        p = 1
+    
+    # if userRoom:
+    #     if int(userRoom) in rooms:
+    #         if len(list(rooms)[int(userRoom)]) % 2 ==1:
+    #             print("Joined A Room")
+    #             rooms[int(userRoom)].append(conn)  
+    #         else:
+    #             print("Room Full Create new Room")
+    #             rooms[int(userRoom)]=conn
+                
+           
+    
+    
+    # if userRoom % 2 == 1:
+    #     games[userRoom] = Game(userRoom)
+    #     print("Creating a new game...")
+    # else:
+    #     games[userRoom].ready = True
+    #     p = 1
 
 
     start_new_thread(threaded_client, (conn, p, gameId))

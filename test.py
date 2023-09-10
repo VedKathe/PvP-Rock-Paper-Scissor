@@ -1,27 +1,32 @@
 import pygame
+from pygame.locals import *
+import time
+import threading
+from network import Network
+import pickle
 pygame.font.init()
 
 
-
+played = False
 width = 700
 height = 600
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
 #Rock Image
-r_right = pygame.transform.smoothscale(pygame.image.load('.\\assets\\rock_right.png'), (220, 200))
-r_left = pygame.transform.smoothscale(pygame.image.load('.\\assets\\rock_left.png'), (220, 200))
+r_right = pygame.transform.smoothscale(pygame.image.load('.\\assets\\rock_right.png'), (230, 210))
+r_left = pygame.transform.smoothscale(pygame.image.load('.\\assets\\rock_left.png'), (230, 210))
 
 #Paper Image
-p_right = pygame.transform.smoothscale(pygame.image.load('.\\assets\\paper_right.png'), (220, 200))
-p_left = pygame.transform.smoothscale(pygame.image.load('.\\assets\\paper_left.png'), (220, 200))
+p_right = pygame.transform.smoothscale(pygame.image.load('.\\assets\\paper_right.png'), (230, 210))
+p_left = pygame.transform.smoothscale(pygame.image.load('.\\assets\\paper_left.png'), (230, 210))
 
 #Scissors Image
-s_right = pygame.transform.smoothscale(pygame.image.load('.\\assets\\scissors_right.png'), (220, 200))
-s_left = pygame.transform.smoothscale(pygame.image.load('.\\assets\\scissors_left.png'), (220, 200))
+s_right = pygame.transform.smoothscale(pygame.image.load('.\\assets\\scissors_right.png'), (230, 210))
+s_left = pygame.transform.smoothscale(pygame.image.load('.\\assets\\scissors_left.png'), (230, 210))
 
 #mainmenu Image
-r_p_s = pygame.transform.smoothscale(pygame.image.load('.\\assets\\r_p_s.png'), (370, 340))
+r_p_s = pygame.transform.smoothscale(pygame.image.load('.\\assets\\r_p_s.png'), (380, 350))
 
 icon = pygame.image.load('.\\assets\\icon.jpg')
 pygame.display.set_icon(icon)
@@ -40,6 +45,18 @@ t_user = sfont.render('You' , True , (255,255,255))
 t_again = smallfont.render('Try Again' , True , (255,255,255))
 t_quit = smallfont.render('Quit' , True , (255,255,255))
 clock = pygame.time.Clock()
+
+
+def start_animation(duration):
+    start_time = pygame.time.get_ticks()
+    end_time = start_time + duration * 1000  # Convert duration to milliseconds
+
+    while pygame.time.get_ticks() < end_time:
+        screen.fill((0, 0, 0))  # Clear the screen
+        for hand in hands:
+            hand.draw(screen)
+        pygame.display.flip()
+
 
 class Button:
     def __init__(self, text, x, y, color,w,hw):
@@ -87,7 +104,43 @@ mainmenubtns =[Button("Join/Create Room", 95,470, (100,100,100),420,(0,230,0)), 
 # color = color_passive
 # active = False
 
+def timer_function():
+    time.sleep(2)
+    global played  # Use the global run variable
+    played = False
+
+class hand:
+    def __init__(self, image , pos):
+        self.image = image
+        self.pos = pos
+        self.initial_pos = pos  # Store the initial position
+        self.move_direction = 1  # 1 for moving down, -1 for moving up
+        self.move_speed = 4
+        
+    def draw(self,screen):
+        screen.blit(self.image,self.pos)
+
+    def changeHand(self,image):
+        screen.fill((0,0,0))
+        self.image=image
+    
+    def move(self):
+        
+        # Update the position to create the up and down animation
+        self.pos = (self.pos[0], self.pos[1] + self.move_speed * self.move_direction)
+
+        # Change direction when reaching the top or bottom
+        if self.pos[1] <= self.initial_pos[1] - 40:
+            self.move_direction = 1
+        elif self.pos[1] >= self.initial_pos[1] + 40:
+            self.move_direction = -1
+        
+  
+hands=[hand(r_left,(0,150)),hand(r_right,(470,150))]      
+
 def mainGame():
+    
+    
     screen.fill((0,0,0))
     run = True
     while run:
@@ -95,10 +148,16 @@ def mainGame():
         clock.tick(60)
         mouse = pygame.mouse.get_pos()
         
+        for hand in hands:
+            global played
+            if played:
+                hand.move()
+            hand.draw(screen)
+            
         for btn in btns:
             btn.draw(screen)
             btn.update_hover_state(mouse)
-        
+
         pygame.display.update()
         
         
@@ -108,18 +167,28 @@ def mainGame():
                 run = False
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                for btn in startmenubtns:
+                for btn in btns:
                     if btn.click(mouse):
-                        if(btn.text.lower() == "start"):
-                            mainmenu()
+                        if(btn.text.lower() == "rock"):
                             
+                            timer_thread = threading.Thread(target=timer_function)
+                            timer_thread.start()
                             
-                        elif(btn.text.lower() == "quit"):
-                            pygame.quit() 
-                            run = False
+                            played = True   
+                            hands[0].changeHand(r_left)
+                            print("Rock")
+                            
+                        elif(btn.text.lower() == "paper"):  
+                            hands[0].changeHand(p_left)
+                            print("Paper")
+                        else:
+                            hands[0].changeHand(s_left)
+                            print("Scissor")
 
 
 def mainmenu():
+    n = Network()
+    
     input_rect = pygame.Rect(95, 400, 420, 50)
     user_text = ''
     color_active = pygame.Color('lightskyblue3')
@@ -202,6 +271,7 @@ def startWindow():
                 for btn in startmenubtns:
                     if btn.click(mouse):
                         if(btn.text.lower() == "start"):
+                            
                             mainmenu()
                             
                             
@@ -210,4 +280,4 @@ def startWindow():
                             run = False
     
                        
-mainGame()
+startWindow()
