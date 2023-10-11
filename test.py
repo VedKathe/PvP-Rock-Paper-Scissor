@@ -188,7 +188,7 @@ def mainGame():
 
 def mainmenu():
     n = Network()
-    
+    print(n.getP())
     input_rect = pygame.Rect(95, 400, 420, 50)
     user_text = ''
     color_active = pygame.Color('lightskyblue3')
@@ -217,12 +217,14 @@ def mainmenu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 
                     
-                for btn in startmenubtns:
+                for btn in mainmenubtns:
                     if btn.click(mouse):
-                        if(btn.text.lower() == "start"):
+                        if(btn.text.lower() == "join/create room"):
+                            reply = n.send(user_text)
+                            print(reply)
                             pass
                             
-                        elif(btn.text.lower() == "quit"): 
+                        elif(btn.text.lower() == "back"): 
                             run = False
             if event.type == pygame.KEYDOWN:
                         # Check for backspace

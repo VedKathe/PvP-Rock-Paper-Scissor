@@ -22,15 +22,26 @@ games = {}
 idCount = 0
 
 
+def join_room():
+    
+    pass
+
+
 def threaded_client(conn, p, gameId):
     global idCount
     conn.send(str.encode(str(p)))
 
+    
+    while True:
+        data = conn.recv(4096).decode()
+        
+        conn.send(str.encode("joined"))
+        break
+    
     reply = ""
     while True:
         try:
             data = conn.recv(4096).decode()
-
             if gameId in games:
                 game = games[gameId]
 
@@ -62,6 +73,7 @@ while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
     #userRoom = conn.recv(1024).decode()
+    connected.add(conn)
     
     idCount += 1
     p = 0

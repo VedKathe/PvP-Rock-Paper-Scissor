@@ -105,7 +105,7 @@ def main():
     run = True
     clock = pygame.time.Clock()
     n = Network()
-
+    player = n.getP()
     
 
     while run:
